@@ -1,5 +1,7 @@
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -11,12 +13,12 @@ public class StateMatrix {
             throw new IllegalArgumentException("Password must be 128 bits");
         }
 
-        Deque<Integer> textDeque = Arrays.stream(text).boxed().collect(Collectors.toCollection(ArrayDeque::new));
         words = new int[4][4];
+        int index = 0;
 
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                words[j][i] = textDeque.pop();
+                words[j][i] = text[index++];
             }
         }
     }
