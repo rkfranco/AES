@@ -1,22 +1,24 @@
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class StateMatrix {
-    private List<int[]> words;
+    private final int[][] words;
 
     private StateMatrix(int[] text) {
         if (text.length != 16) {
             throw new IllegalArgumentException("Password must be 128 bits");
         }
 
-        words = new ArrayList<>();
-        words.add(Arrays.copyOfRange(text, 0, 4));
-        words.add(Arrays.copyOfRange(text, 4, 8));
-        words.add(Arrays.copyOfRange(text, 8, 12));
-        words.add(Arrays.copyOfRange(text, 12, 16));
+        Deque<Integer> textDeque = Arrays.stream(text).boxed().collect(Collectors.toCollection(ArrayDeque::new));
+        words = new int[4][4];
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                words[j][i] = textDeque.pop();
+            }
+        }
     }
 
     private StateMatrix(int[] firstKey, int[] secondKey, int[] thirdKey, int[] fourthKey) {
@@ -24,7 +26,14 @@ public class StateMatrix {
             throw new IllegalArgumentException("Password must be 128 bits: all the words must have 32 bits");
         }
 
-        words = List.of(firstKey, secondKey, thirdKey, fourthKey);
+        words = new int[4][4];
+
+        for (int i = 0; i < 4; i++) {
+            words[i][0] = firstKey[i];
+            words[i][1] = secondKey[i];
+            words[i][2] = thirdKey[i];
+            words[i][3] = fourthKey[i];
+        }
     }
 
     public static StateMatrix fromKeyString(String password) {
@@ -35,7 +44,7 @@ public class StateMatrix {
         List<StateMatrix> result = new ArrayList<>();
 
         for (int i = 0; i < simpleText.length(); i += 16) {
-            result.add(new StateMatrix(simpleText.substring(i, i+16).chars().toArray()));
+            result.add(new StateMatrix(simpleText.substring(i, i + 16).chars().toArray()));
         }
 
         return result;
@@ -46,26 +55,36 @@ public class StateMatrix {
     }
 
     public StateMatrix shiftRows() {
-        IntStream.range(0, 4).forEach(i -> words.set(i, rotateWord(words.get(i), i)));
-        return this;
+        List<int[]> rows = this.getRows();
+        return new StateMatrix(IntStream.range(0, 4).flatMap(i -> Arrays.stream(rotateRow(rows.get(i), i))).toArray());
     }
 
-    private static int[] rotateWord(int[] word, int index) {
-        int secondItem = 1 + index;
-        int thirdItem = 2 + index;
-        int fourthItem = 3 + index;
+    private static int[] rotateRow(int[] row, int index) {
+        for (int i = 0; i < index; i++) {
+            row = new int[]{row[1], row[2], row[3], row[0]};
+        }
+        return row;
+    }
 
-        if (secondItem > 3) secondItem -= 3;
-
-        if (thirdItem > 3) thirdItem -= 3;
-
-        if (fourthItem > 3) fourthItem -= 3;
-
-        return new int[]{word[index], word[secondItem], word[thirdItem], word[fourthItem]};
+    public List<int[]> getRows() {
+        return Arrays.stream(words, 0, 4).collect(Collectors.toList());
     }
 
     public List<int[]> getWords() {
-        return words;
+        List<int[]> rows = new ArrayList<>();
+        int[] row;
+
+        for (int i = 0; i < 4; i++) {
+            row = new int[4];
+
+            for (int j = 0; j < 4; j++) {
+                row[j] = words[j][i];
+            }
+
+            rows.add(row);
+        }
+
+        return rows;
     }
 
     @Override
@@ -79,11 +98,10 @@ public class StateMatrix {
 
         for (int j = 0; j < 4; j++) {
             for (int i = 0; i < 4; i++) {
-                lines[i].append(formatter.format(words.get(j)[i])).append(" | ");
+                lines[i].append(formatter.format(words[i][j])).append(" | ");
             }
         }
 
         return String.join("\n", lines);
     }
-
 }
