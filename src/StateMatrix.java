@@ -1,3 +1,4 @@
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,11 +43,16 @@ public class StateMatrix {
         return new StateMatrix(Arrays.stream(password.split(",")).mapToInt(Integer::parseInt).toArray());
     }
 
+    public static StateMatrix fromArray(int[] array) {
+        return new StateMatrix(array);
+    }
+
     public static List<StateMatrix> fromSimpleText(String simpleText) {
         List<StateMatrix> result = new ArrayList<>();
+        String processedText = BlockFilling.pkcs7(simpleText, 16);
 
-        for (int i = 0; i < simpleText.length(); i += 16) {
-            result.add(new StateMatrix(simpleText.substring(i, i + 16).chars().toArray()));
+        for (int i = 0; i < processedText.length(); i += 16) {
+            result.add(new StateMatrix(processedText.substring(i, i + 16).chars().toArray()));
         }
 
         return result;
@@ -87,6 +93,12 @@ public class StateMatrix {
         }
 
         return rows;
+    }
+
+    public String toStringArray() {
+        StringWriter sr = new StringWriter();
+        this.getWords().forEach(w -> Arrays.stream(w).forEach(sr::write));
+        return sr.toString();
     }
 
     @Override

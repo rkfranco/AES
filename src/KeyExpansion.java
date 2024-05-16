@@ -23,6 +23,14 @@ public class KeyExpansion {
 
 
     private static int[] expandFirstKey(StateMatrix previousMatrix, int index) {
+
+        // return Optional.of(previousMatrix.getWords().get(3)) // (1) Copiar última palavra da round key anterior
+        //         .map(KeyExpansion::rotateWord) // (2) Rotacionar bytes (RotWord)
+        //         .map(Utils::substituteWord) // (3) Substituir bytes (SubWord)
+        //         .map(w -> Utils.applyXOR(w, Utils.getRoundConstant(index))) // (4) Gerar RoundConstant // (5) XOR de (3) com (4)
+        //         .map(w -> Utils.applyXOR(w, previousMatrix.getWords().get(0))) // (6) XOR de (5) com 1ª palavra da roundkey anterior
+        //         .orElseThrow(IllegalArgumentException::new);
+
         // (1) Copiar última palavra da round key anterior
         int[] lastWord = previousMatrix.getWords().get(3);
 

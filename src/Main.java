@@ -7,8 +7,9 @@ public class Main {
         String password = "20,1,94,33,199,0,48,9,31,94,112,40,59,30,100,248";
         StateMatrix matrix = StateMatrix.fromKeyString(password);
         List<StateMatrix> roundKeys = KeyExpansion.expandKeys(matrix);
-        roundKeys.stream().map(m -> m.toString().concat("\n----------------------")).forEach(System.out::println);
+        // roundKeys.stream().map(m -> m.toString().concat("\n----------------------")).forEach(System.out::println);
 
+        System.out.println(BlockCipher.encrypt("teste", password));
 
         // String teste = "aaaaaaaaaab";
         // String bloco = BlockFilling.pkcs7(teste, 11);
