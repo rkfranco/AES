@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class KeyExpansion {
 
@@ -21,36 +22,12 @@ public class KeyExpansion {
         return roundKeys;
     }
 
-
     private static int[] expandFirstKey(StateMatrix previousMatrix, int index) {
-
-        // return Optional.of(previousMatrix.getWords().get(3)) // (1) Copiar última palavra da round key anterior
-        //         .map(KeyExpansion::rotateWord) // (2) Rotacionar bytes (RotWord)
-        //         .map(Utils::substituteWord) // (3) Substituir bytes (SubWord)
-        //         .map(w -> Utils.applyXOR(w, Utils.getRoundConstant(index))) // (4) Gerar RoundConstant // (5) XOR de (3) com (4)
-        //         .map(w -> Utils.applyXOR(w, previousMatrix.getWords().get(0))) // (6) XOR de (5) com 1ª palavra da roundkey anterior
-        //         .orElseThrow(IllegalArgumentException::new);
-
-        // (1) Copiar última palavra da round key anterior
-        int[] lastWord = previousMatrix.getWords().get(3);
-
-        // (2) Rotacionar bytes (RotWord)
-        int[] rotWord = rotateWord(lastWord);
-
-        // (3) Substituir bytes (SubWord)
-        int[] subWord = Utils.substituteWord(rotWord);
-
-        // (4) Gerar RoundConstant
-        int[] roundConstant = Utils.getRoundConstant(index);
-
-        // (5) XOR de (3) com (4)
-        int[] appliedXOR = Utils.applyXOR(subWord, roundConstant);
-
-        // (6) XOR de (5) com 1ª palavra da roundkey anterior
-        return Utils.applyXOR(appliedXOR, previousMatrix.getWords().get(0));
-    }
-
-    private static int[] rotateWord(int[] word) {
-        return new int[]{word[1], word[2], word[3], word[0]};
+        return Optional.of(previousMatrix.getWords().get(3))                            // (1) Copiar última palavra da round key anterior
+                .map(Utils::rotateArray)                                                // (2) Rotacionar bytes (RotWord)
+                .map(Utils::substituteWord)                                             // (3) Substituir bytes (SubWord)
+                .map(w -> Utils.applyXOR(w, Utils.getRoundConstant(index)))             // (4) Gerar RoundConstant // (5) XOR de (3) com (4)
+                .map(w -> Utils.applyXOR(w, previousMatrix.getWords().get(0)))          // (6) XOR de (5) com 1ª palavra da roundkey anterior
+                .orElseThrow(IllegalArgumentException::new);
     }
 }
