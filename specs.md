@@ -16,9 +16,4 @@
   etapas de expansão de chave e criptografia. Não deve ser reutilizada uma biblioteca de cifragem.
   Não implementaremos neste programa a decifragem. Pode ser utilizada qualquer linguagem de programação. Para
   testar seu programa, você pode reusar uma biblioteca para cifragem e comparar com a sua saída do seu programa.
-  O trabalho poderá ser feito em equipe de até 3 pessoas. 
-
-Informe no formulário abaixo os integrantes da sua equipe.  
-https://forms.office.com/r/PhQPAWGYG3
-
-O trabalho deve ser publicado até o dia 26/05/2024.  
+  O trabalho poderá ser feito em equipe de até 3 pessoas.
