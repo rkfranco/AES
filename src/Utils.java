@@ -3,7 +3,8 @@ import java.util.stream.IntStream;
 
 public class Utils {
     static int[] substituteWord(int[] words) {
-        return Arrays.stream(words).map(SBox::getTableValue).toArray();
+        words = Arrays.stream(words).map(SBox::getTableValue).toArray();
+        return words;
     }
 
     static int[] getRoundConstant(int index) {

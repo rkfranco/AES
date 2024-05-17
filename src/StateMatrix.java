@@ -49,10 +49,9 @@ public class StateMatrix {
 
     public static List<StateMatrix> fromSimpleText(String simpleText) {
         List<StateMatrix> result = new ArrayList<>();
-        String processedText = BlockFilling.pkcs7(simpleText, 16);
 
-        for (int i = 0; i < processedText.length(); i += 16) {
-            result.add(new StateMatrix(processedText.substring(i, i + 16).chars().toArray()));
+        for (int i = 0; i < simpleText.length(); i += 16) {
+            result.add(new StateMatrix(simpleText.substring(i, i + 16).chars().toArray()));
         }
 
         return result;
@@ -60,6 +59,10 @@ public class StateMatrix {
 
     public static StateMatrix fromRoundKeys(int[] firstKey, int[] secondKey, int[] thirdKey, int[] fourthKey) {
         return new StateMatrix(firstKey, secondKey, thirdKey, fourthKey);
+    }
+
+    public StateMatrix subBytes(){
+        Arrays.stream(this.words).map(Arrays::stream).map(SBox::getTableValue);
     }
 
     public StateMatrix shiftRows() {
@@ -101,6 +104,13 @@ public class StateMatrix {
         return sr.toString();
     }
 
+    public String toHex() {
+        return this.getWords().stream()
+                .flatMapToInt(Arrays::stream)
+                .mapToObj(Integer::toHexString)
+                .collect(Collectors.joining(" "));
+    }
+
     @Override
     public String toString() {
         DecimalFormat formatter = new DecimalFormat("000");
@@ -112,7 +122,7 @@ public class StateMatrix {
 
         for (int j = 0; j < 4; j++) {
             for (int i = 0; i < 4; i++) {
-                lines[i].append(formatter.format(words[i][j])).append(" | ");
+                lines[i].append(Integer.toHexString(words[i][j])).append(" | ");
             }
         }
 

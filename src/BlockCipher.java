@@ -3,27 +3,51 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BlockCipher {
-    public static String encrypt(String simpleText, String key) {
+    public static String encryptString(String simpleText, String key) {
         List<StateMatrix> roundKeys = KeyExpansion.expandKeys(StateMatrix.fromKeyString(key));
-        List<StateMatrix> textBlocks = StateMatrix.fromSimpleText(simpleText);
+        List<StateMatrix> textBlocks = StateMatrix.fromSimpleText(BlockFilling.pkcs7(simpleText, 16));
+        return encrypt(roundKeys, textBlocks);
+    }
 
+    public static String encryptArray(int[] simpleText, int[] key) {
+        List<StateMatrix> roundKeys = KeyExpansion.expandKeys(StateMatrix.fromArray(key));
+        List<StateMatrix> textBlocks = StateMatrix.fromSimpleText(BlockFilling.pkcs7(simpleText, 16));
+        return encrypt(roundKeys, textBlocks);
+    }
+
+    private static String encrypt(List<StateMatrix> roundKeys, List<StateMatrix> textBlocks) {
         textBlocks = textBlocks.stream().map(b -> applyXOR(b, roundKeys.get(0))).collect(Collectors.toList());
 
         for (int i = 1; i < 10; i++) {
             StateMatrix roundKey = roundKeys.get(i);
             textBlocks = textBlocks.stream()
-                    .peek(b -> b.getWords().forEach(Utils::substituteWord))
+                    .map(BlockCipher::subBytes)
+                    // .peek(b -> b.getWords().forEach(Utils::substituteWord))
+                    .peek(b -> System.out.println("sub : \n".concat(b.toString())))
                     .map(StateMatrix::shiftRows)
+                    .peek(b -> System.out.println("shift : \n".concat(b.toString())))
                     .map(BlockCipher::mixColumns)
+                    .peek(b -> System.out.println("mix : \n".concat(b.toString())))
                     .map(b -> applyXOR(b, roundKey))
+                    .peek(b -> System.out.println("finalXor : \n".concat(b.toString())))
                     .collect(Collectors.toList());
+            System.out.println("----------------------------------");
         }
 
         return textBlocks.stream()
                 .peek(b -> b.getWords().forEach(Utils::substituteWord))
                 .map(StateMatrix::shiftRows)
                 .map(b -> applyXOR(b, roundKeys.get(10)))
-                .map(StateMatrix::toStringArray).collect(Collectors.joining());
+                .map(StateMatrix::toHex).collect(Collectors.joining("\n"));
+    }
+
+    private static StateMatrix subBytes(StateMatrix matrix) {
+        for (int[] row : matrix.getRows()) {
+            for (int item : row) {
+                item = SBox.getTableValue(item);
+            }
+        }
+        return matrix;
     }
 
     private static StateMatrix mixColumns(StateMatrix matrix) {
