@@ -1,3 +1,10 @@
+package aes;
+
+import aes.tables.ETable;
+import aes.tables.LTable;
+import aes.tables.SBox;
+import aes.utils.Utils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -5,14 +12,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class StateMatrix {
-    private final int[][] words;
+    private final int[][] words = new int[4][4];
+    ;
 
     private StateMatrix(int[] text) {
         if (text.length != 16) {
             throw new IllegalArgumentException("Password must be 128 bits");
         }
 
-        words = new int[4][4];
         int index = 0;
 
         for (int i = 0; i < 4; i++) {
@@ -27,8 +34,6 @@ public class StateMatrix {
             throw new IllegalArgumentException("Password must be 128 bits: all the words must have 32 bits");
         }
 
-        words = new int[4][4];
-
         for (int i = 0; i < 4; i++) {
             words[i][0] = firstKey[i];
             words[i][1] = secondKey[i];
@@ -37,11 +42,11 @@ public class StateMatrix {
         }
     }
 
-    public static StateMatrix fromKeyString(String password) {
+    public static StateMatrix fromKey(String password) {
         return new StateMatrix(Arrays.stream(password.split(",")).mapToInt(Integer::parseInt).toArray());
     }
 
-    public static StateMatrix fromArray(int[] array) {
+    public static StateMatrix fromKey(int[] array) {
         return new StateMatrix(array);
     }
 
@@ -50,6 +55,16 @@ public class StateMatrix {
 
         for (int i = 0; i < simpleText.length(); i += 16) {
             result.add(new StateMatrix(simpleText.substring(i, i + 16).chars().toArray()));
+        }
+
+        return result;
+    }
+
+    public static List<StateMatrix> fromSimpleText(int[] simpleText) {
+        List<StateMatrix> result = new ArrayList<>();
+
+        for (int i = 0; i < simpleText.length; i += 16) {
+            result.add(new StateMatrix(Arrays.copyOfRange(simpleText, i, i + 16)));
         }
 
         return result;
@@ -89,7 +104,11 @@ public class StateMatrix {
     }
 
     public StateMatrix subBytes() {
-        IntStream.range(0, 4).forEach(i -> IntStream.range(0, 4).forEach(j -> words[i][j] = SBox.getTableValue(words[i][j])));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                words[i][j] = SBox.getTableValue(words[i][j]);
+            }
+        }
         return this;
     }
 
@@ -101,17 +120,21 @@ public class StateMatrix {
     public StateMatrix mixColumns() {
         List<int[]> wordsList = getWords();
 
-        IntStream.range(0, 4).forEach(i ->
-                IntStream.range(0, 4).forEach(j ->
-                        words[i][j] = calculateMixColumns(wordsList.get(j), Utils.getMultiMatrixRow(i))
-                )
-        );
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                words[i][j] = calculateMixColumns(wordsList.get(j), Utils.getMultiMatrixRow(i));
+            }
+        }
 
         return this;
     }
 
     public StateMatrix applyRoundKey(StateMatrix roundKey) {
-        IntStream.range(0, 4).forEach(i -> IntStream.range(0, 4).forEach(j -> words[i][j] = words[i][j] ^ roundKey.words[i][j]));
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                words[i][j] = words[i][j] ^ roundKey.words[i][j];
+            }
+        }
         return this;
     }
 
@@ -121,6 +144,10 @@ public class StateMatrix {
 
     public List<int[]> getWords() {
         return IntStream.range(0, 4).mapToObj(i -> IntStream.range(0, 4).map(j -> words[j][i]).toArray()).collect(Collectors.toList());
+    }
+
+    public int[] toIntArray() {
+        return getWords().stream().flatMapToInt(Arrays::stream).toArray();
     }
 
     public String toHexString() {
