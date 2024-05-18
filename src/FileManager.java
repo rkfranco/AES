@@ -15,7 +15,7 @@ public class FileManager {
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             return reader.lines().flatMapToInt(String::chars).toArray();
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar chaves");
+            throw new RuntimeException("Error when trying to read the selected file");
         }
     }
 }
