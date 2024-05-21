@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 public class BlockCipher {
 
-    public static int[] encryptString(String simpleText, String key) {
+    public static int[] encryptString(int[] simpleText, String key) {
         List<StateMatrix> roundKeys = KeyExpansion.expandKeys(StateMatrix.fromKey(key));
         List<StateMatrix> textBlocks = StateMatrix.fromSimpleText(simpleText);
         return encrypt(roundKeys, textBlocks);

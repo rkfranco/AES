@@ -1,19 +1,22 @@
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class FileManager {
 
-    public static boolean saveContentFile(String path, char[] content) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-            writer.write(content);
+    public static boolean saveContentFile(String path, byte[] content) {
+        try (FileOutputStream fos = new FileOutputStream(path)) {
+            fos.write(content);
         } catch (IOException e) {
             return false;
         }
         return true;
     }
 
-    public static int[] readContentFile(String path) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            return reader.lines().flatMapToInt(String::chars).toArray();
+    public static byte[] readContentFile(String path) {
+        try (FileInputStream fis = new FileInputStream(path)) {
+            return fis.readAllBytes();
+            // return reader.lines().flatMapToInt(String::chars).toArray();
         } catch (IOException e) {
             throw new RuntimeException("Error when trying to read the selected file");
         }

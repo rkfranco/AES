@@ -15,9 +15,9 @@ public class Main {
 
         AES cipher = new AES();
 
-        int[] result = cipher.encrypt(FileManager.readContentFile(fileToEncrypt.getPath()), password);
+        int[] result = cipher.encrypt(byteToIntArray(FileManager.readContentFile(fileToEncrypt.getPath())), password);
 
-        boolean fileSave = FileManager.saveContentFile(path + "\\" + fileName, intToCharArray(result));
+        boolean fileSave = FileManager.saveContentFile(path + "\\" + fileName, intToByteArray(result));
 
         JOptionPane.showMessageDialog(null, fileSave ? "File saved successfully" : "Unable to save the file");
     }
@@ -53,10 +53,18 @@ public class Main {
         return fileName;
     }
 
-    private static char[] intToCharArray(int[] array) {
-        char[] newArray = new char[array.length];
+    private static int[] byteToIntArray(byte[] array) {
+        int[] newArray = new int[array.length];
         for (int i = 0; i < array.length; i++) {
-            newArray[i] = (char) array[i];
+            newArray[i] = array[i];
+        }
+        return newArray;
+    }
+
+    private static byte[] intToByteArray(int[] array) {
+        byte[] newArray = new byte[array.length];
+        for (int i = 0; i < array.length; i++) {
+            newArray[i] = (byte) array[i];
         }
         return newArray;
     }

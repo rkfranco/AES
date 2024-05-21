@@ -6,17 +6,16 @@ public class BlockFilling {
         return simpleText.concat(String.valueOf((char) qdtCharAppend).repeat(Math.max(0, qdtCharAppend)));
     }
 
-    public static String pkcs7(int[] simpleText, int blockSize) {
-        int qdtCharAppend = blockSize - simpleText.length % blockSize;
+    public static int[] pkcs7(int[] simpleText, int blockSize) {
+        int textLength = simpleText.length;
+        int qdtCharAppend = blockSize - textLength % blockSize;
 
-        StringBuilder sb = new StringBuilder();
+        int[] result = new int[textLength + qdtCharAppend];
 
-        for (int i : simpleText) {
-            sb.append((char) i);
-        }
+        System.arraycopy(simpleText, 0, result, 0, textLength);
 
-        sb.append(String.valueOf((char) qdtCharAppend).repeat(Math.max(0, qdtCharAppend)));
+        for (int i = 0; i < qdtCharAppend; i++) result[i + textLength] = qdtCharAppend;
 
-        return sb.toString();
+        return result;
     }
 }
