@@ -16,7 +16,6 @@ public class FileManager {
     public static byte[] readContentFile(String path) {
         try (FileInputStream fis = new FileInputStream(path)) {
             return fis.readAllBytes();
-            // return reader.lines().flatMapToInt(String::chars).toArray();
         } catch (IOException e) {
             throw new RuntimeException("Error when trying to read the selected file");
         }
