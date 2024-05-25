@@ -34,4 +34,8 @@ public class UserInterface {
         String fileName = JOptionPane.showInputDialog("Enter the file name:");
         return fileName.contains(".") ? fileName : fileName.concat(".txt");
     }
+
+    static void showSaveFileResult(boolean fileSave) {
+        JOptionPane.showMessageDialog(null, fileSave ? "File saved successfully" : "Unable to save the file");
+    }
 }

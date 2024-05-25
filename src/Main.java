@@ -1,6 +1,5 @@
 import aes.AES;
 
-import javax.swing.*;
 import java.io.File;
 
 public class Main {
@@ -14,6 +13,6 @@ public class Main {
 
         boolean fileSave = FileManager.saveContentFile(path + "\\" + fileName, Utils.intToByteArray(result));
 
-        JOptionPane.showMessageDialog(null, fileSave ? "File saved successfully" : "Unable to save the file");
+        UserInterface.showSaveFileResult(fileSave);
     }
 }
