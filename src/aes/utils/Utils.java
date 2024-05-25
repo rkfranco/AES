@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Utils {
-    public static final List<int[]> multiplacationMatrixRows = StateMatrix.fromKey("2,1,1,3,3,2,1,1,1,3,2,1,1,1,3,2").getRows();
+    public static final List<int[]> MULTIPLACATION_MATRIX_ROWS = StateMatrix.fromKey("2,1,1,3,3,2,1,1,1,3,2,1,1,1,3,2").getRows();
 
     public static int[] getMultiMatrixRow(int index) {
-        return multiplacationMatrixRows.get(index);
+        return MULTIPLACATION_MATRIX_ROWS.get(index);
     }
 
     public static int[] substituteWord(int[] words) {

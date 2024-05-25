@@ -13,7 +13,6 @@ import java.util.stream.IntStream;
 
 public class StateMatrix {
     private final int[][] words = new int[4][4];
-    ;
 
     private StateMatrix(int[] text) {
         if (text.length != 16) {
@@ -48,16 +47,6 @@ public class StateMatrix {
 
     public static StateMatrix fromKey(int[] array) {
         return new StateMatrix(array);
-    }
-
-    public static List<StateMatrix> fromSimpleText(String simpleText) {
-        List<StateMatrix> result = new ArrayList<>();
-
-        for (int i = 0; i < simpleText.length(); i += 16) {
-            result.add(new StateMatrix(simpleText.substring(i, i + 16).chars().toArray()));
-        }
-
-        return result;
     }
 
     public static List<StateMatrix> fromSimpleText(int[] simpleText) {
@@ -132,7 +121,7 @@ public class StateMatrix {
     public StateMatrix applyRoundKey(StateMatrix roundKey) {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                words[i][j] = words[i][j] ^ roundKey.words[i][j];
+                words[i][j] ^= roundKey.words[i][j];
             }
         }
         return this;
@@ -150,11 +139,8 @@ public class StateMatrix {
         return getWords().stream().flatMapToInt(Arrays::stream).toArray();
     }
 
-    public String toHexString() {
-        return this.getWords().stream()
-                .flatMapToInt(Arrays::stream)
-                .mapToObj(Integer::toHexString)
-                .collect(Collectors.joining(" "));
+    private String formatHex(String hex) {
+        return (hex.length() == 1 ? "0x0" : "0x").concat(hex);
     }
 
     @Override
@@ -169,9 +155,5 @@ public class StateMatrix {
         }
 
         return String.join("\n", lines);
-    }
-
-    private String formatHex(String hex) {
-        return (hex.length() == 1 ? "0x0" : "0x").concat(hex);
     }
 }

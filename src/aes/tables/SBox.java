@@ -21,7 +21,7 @@ public class SBox {
     };
 
     public static int getTableValue(int value) {
-        int upperFourBits = (value & 0xFF) >> 4;
+        int upperFourBits = value >> 4;
         int lowerFourBits = value & 0x0F;
         return TABLE[upperFourBits][lowerFourBits];
     }
