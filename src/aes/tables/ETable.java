@@ -21,7 +21,7 @@ public class ETable {
     };
 
     public static int getTableValue(int value) {
-        int upperFourBits = value >> 4;
+        int upperFourBits = (value & 0xF0) >> 4;
         int lowerFourBits = value & 0x0F;
         return TABLE[upperFourBits][lowerFourBits];
     }
